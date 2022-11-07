@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import "../App.css";
 import { BsFillMoonFill, BsMoon } from "react-icons/bs";
@@ -13,6 +13,7 @@ const Home = () => {
   const [countries, setCountries] = useState([]);
   const countriesInputRef = useRef();
   const regionRef = useRef();
+  const navigate = useNavigate();
 
   const noCountries = countries.status || countries.message;
 
@@ -89,6 +90,10 @@ const Home = () => {
     }
   };
 
+  const showDetail = (code) => {
+    navigate(`/${code}`);
+  }
+
   return (
     <div className={`app ${darkMode ? "darkMode" : ""}`}>
       <div className={`header ${darkMode ? "darkMode" : ""}`}>
@@ -136,6 +141,7 @@ const Home = () => {
                       flag={country.flag}
                       region={country.region}
                       name={country.name}
+                      showDetail= {showDetail}
                     />
                   ))
                 ) : (
@@ -146,8 +152,8 @@ const Home = () => {
           }
         />
         <Route
-          path='country-detail'
-          element={<CountryDetail darkMode={darkMode} />}
+          path='/:countryCode'
+          element={<CountryDetail darkMode={darkMode} countries={countries} refetch={fetchData}/>}
         />
       </Routes>
     </div>
