@@ -14,6 +14,8 @@ const Home = () => {
   const countriesInputRef = useRef();
   const regionRef = useRef();
 
+  const noCountries = countries.status || countries.message;
+
   const switchMode = () => {
     setDarkMode((prevState) => !prevState);
   };
@@ -28,30 +30,64 @@ const Home = () => {
   const fetchData = async () => {
     const response = await fetch("https://restcountries.com/v2/all");
     const data = await response.json();
+
+    if (data.status === 404) {
+      setCountries([]);
+      return;
+    }
+
     setCountries(data);
   };
 
   const searchCountries = (e) => {
     const searchValue = countriesInputRef.current.value;
 
-    if (searchValue.trim()){
-      const fetchData =  async () => {
+    if (searchValue.trim()) {
+      const fetchData = async () => {
         const response = await fetch(
           `https://restcountries.com/v2/name/${searchValue}`
         );
         const data = await response.json();
         setCountries(data);
-      }
+      };
       try {
+        fetchData();
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      fetchData();
+    }
+  };
+
+  const selectRegion = (e) => {
+    const selectValue = regionRef.current.value;
+
+    if (selectValue.trim()) {
+      const fetchData = async () => {
+        const response = await fetch(
+          `https://restcountries.com/v2/region/${selectValue}`
+        );
+        const data = await response.json();
+        
+        if (selectValue === 'All') {
+          try {
+            fetchData();
+          } catch (error) {
+            console.log(error);
+          }
+          return;
+        }
+
+        setCountries(data);
+      };
+      try{
         fetchData()
       } catch (error) {
         console.log(error);
       }
-      
-    }else{
-        fetchData()
-      }
-  }
+    }
+  };
 
   return (
     <div className={`app ${darkMode ? "darkMode" : ""}`}>
@@ -70,10 +106,15 @@ const Home = () => {
               <div className='inputs'>
                 <div className={`search-input ${darkMode ? "darkMode" : ""}`}>
                   <BsSearch className='search-icon' />
-                  <input type='text' placeholder='Search for a country' ref={countriesInputRef} onChange={searchCountries}/>
+                  <input
+                    type='text'
+                    placeholder='Search for a country'
+                    ref={countriesInputRef}
+                    onChange={searchCountries}
+                  />
                 </div>
                 <div className={`select-region ${darkMode ? "darkMode" : ""}`}>
-                  <select ref={regionRef}>
+                  <select ref={regionRef} onChange={selectRegion}>
                     <option>All</option>
                     <option>Africa</option>
                     <option>Americas</option>
@@ -84,18 +125,22 @@ const Home = () => {
                 </div>
               </div>
               <div className='countries'>
-                {countries.map((country) => (
-                  <Country
-                    key={country.aplha3Code}
-                    darkMode={darkMode}
-                    code={country.alpha3Code}
-                    capital={country.capital}
-                    population={country.population}
-                    flag={country.flag}
-                    region={country.region}
-                    name={country.name}
-                  />
-                ))}
+                {!noCountries ? (
+                  countries.map((country) => (
+                    <Country
+                      key={country.alpha3Code}
+                      darkMode={darkMode}
+                      code={country.alpha3Code}
+                      capital={country.capital}
+                      population={country.population}
+                      flag={country.flag}
+                      region={country.region}
+                      name={country.name}
+                    />
+                  ))
+                ) : (
+                  <p>No countries found...</p>
+                )}
               </div>
             </div>
           }
