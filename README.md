@@ -28,7 +28,7 @@ Users should be able to:
 
 ### Screenshot
 
-[https://github.com/CMadiope/country/blob/main/public/design/desktop-design-home-dark.jpg]
+(https://github.com/CMadiope/country/blob/main/public/design/desktop-design-home-dark.jpg)
 
 
 
