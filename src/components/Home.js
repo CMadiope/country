@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import React from "react";
 import "../App.css";
@@ -11,6 +11,8 @@ import CountryDetail from "../components/CountryDetail";
 const Home = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [countries, setCountries] = useState([]);
+  const countriesInputRef = useRef();
+  const regionRef = useRef();
 
   const switchMode = () => {
     setDarkMode((prevState) => !prevState);
@@ -29,6 +31,28 @@ const Home = () => {
     setCountries(data);
   };
 
+  const searchCountries = (e) => {
+    const searchValue = countriesInputRef.current.value;
+
+    if (searchValue.trim()){
+      const fetchData =  async () => {
+        const response = await fetch(
+          `https://restcountries.com/v2/name/${searchValue}`
+        );
+        const data = await response.json();
+        setCountries(data);
+      }
+      try {
+        fetchData()
+      } catch (error) {
+        console.log(error);
+      }
+      
+    }else{
+        fetchData()
+      }
+  }
+
   return (
     <div className={`app ${darkMode ? "darkMode" : ""}`}>
       <div className={`header ${darkMode ? "darkMode" : ""}`}>
@@ -46,10 +70,10 @@ const Home = () => {
               <div className='inputs'>
                 <div className={`search-input ${darkMode ? "darkMode" : ""}`}>
                   <BsSearch className='search-icon' />
-                  <input type='text' placeholder='Search for a country' />
+                  <input type='text' placeholder='Search for a country' ref={countriesInputRef} onChange={searchCountries}/>
                 </div>
                 <div className={`select-region ${darkMode ? "darkMode" : ""}`}>
-                  <select>
+                  <select ref={regionRef}>
                     <option>All</option>
                     <option>Africa</option>
                     <option>Americas</option>
