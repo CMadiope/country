@@ -28,7 +28,7 @@ Users should be able to:
 
 ### Screenshot
 
-!['/public/design/desktop-design-home-dark.jpg']
+['/public/design/desktop-design-home-dark.jpg']
 
 
 
